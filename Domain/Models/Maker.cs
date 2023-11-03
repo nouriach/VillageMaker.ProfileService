@@ -2,7 +2,7 @@
 
 namespace ProfileService.Domain.Models;
 
-public class Profile
+public class Maker
 {
     [Key]
     [Required]

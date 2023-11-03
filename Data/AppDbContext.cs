@@ -10,5 +10,5 @@ public class AppDbContext : DbContext
         
     }
 
-    public DbSet<Profile> Profiles { get; set; }
+    public DbSet<Maker> Makers { get; set; }
 }
