@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using ProfileService.Data;
 using ProfileService.Data.Interfaces;
 using ProfileService.Data.Repositories;
+using ProfileService.SyncDataServices.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseInMemoryDatabase("InMem"));
 builder.Services.AddScoped<IMakerRepo, MakerRepo>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddHttpClient<IProductDataClient, HttpProductDataClient>();
+Console.WriteLine($"---> Product Service endpoint: {builder.Configuration["ProductService"]}");
 
 var app = builder.Build();
 
