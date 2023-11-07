@@ -1,19 +1,33 @@
-﻿using ProfileService.Domain.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using ProfileService.Domain.Models;
 
 namespace ProfileService.Data;
 
 public static class PrepDb
 {
-    public static void PrepPopulation(IApplicationBuilder app)
+    public static void PrepPopulation(IApplicationBuilder app, bool isProduction)
     {
         using (var serviceScope = app.ApplicationServices.CreateScope())
         {
-            SeedData(serviceScope.ServiceProvider.GetService<AppDbContext>());
+            SeedData(serviceScope.ServiceProvider.GetService<AppDbContext>(), isProduction);
         }
     }
 
-    private static void SeedData(AppDbContext context)
+    private static void SeedData(AppDbContext context, bool isProduction)
     {
+        if (isProduction)
+        {
+            Console.WriteLine("---> Attempting to apply Migrations");
+            try
+            {
+                context.Database.Migrate();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+        
         if (!context.Makers.Any())
         {
             Console.WriteLine("---> Seeding data...");
