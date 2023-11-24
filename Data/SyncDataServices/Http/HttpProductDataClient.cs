@@ -2,7 +2,7 @@ using System.Text;
 using System.Text.Json;
 using ProfileService.Domain.DTOs;
 
-namespace ProfileService.SyncDataServices.Http;
+namespace ProfileService.Data.SyncDataServices.Http;
 
 public class HttpProductDataClient : IProductDataClient
 {
