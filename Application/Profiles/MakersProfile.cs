@@ -13,5 +13,6 @@ public class MakersProfile : Profile
         // Target = what is returned from the DB
         CreateMap<Maker, MakerReadDto>();
         CreateMap<MakerCreateDto, Maker>();
+        CreateMap<MakerReadDto, MakerPublishedDto>();
     }
 }

@@ -1,9 +1,10 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using ProfileService.Data.AsyncDataServices;
 using ProfileService.Data.Interfaces;
+using ProfileService.Data.SyncDataServices.Http;
 using ProfileService.Domain.DTOs;
 using ProfileService.Domain.Models;
-using ProfileService.SyncDataServices.Http;
 
 namespace ProfileService.Controllers;
 
@@ -14,12 +15,18 @@ public class MakersController : ControllerBase
     private readonly IMakerRepo _repo;
     private readonly IMapper _mapper;
     private readonly IProductDataClient _productDataClient;
+    private readonly IMessageBusClient _messageBusClient;
 
-    public MakersController(IMakerRepo repo, IMapper mapper, IProductDataClient productDataClient)
+    public MakersController(
+        IMakerRepo repo,
+        IMapper mapper,
+        IProductDataClient productDataClient,
+        IMessageBusClient messageBusClient)
     {
         _repo = repo;
         _mapper = mapper;
         _productDataClient = productDataClient;
+        _messageBusClient = messageBusClient;
     }
 
     [HttpGet]
@@ -51,6 +58,7 @@ public class MakersController : ControllerBase
 
         var makerReadDto = _mapper.Map<MakerReadDto>(makerModel);
 
+        // Send Sync Message
         try
         {
             await _productDataClient.SendMakerToProduct(makerReadDto);
@@ -60,6 +68,17 @@ public class MakersController : ControllerBase
             Console.WriteLine($"---> Could not send synchronously: {ex.Message}");
         }
         
+        // Send Async Message
+        try
+        {
+            var makerPublishedDto = _mapper.Map<MakerPublishedDto>(makerReadDto);
+            makerPublishedDto.Event = "Maker_Published";
+            _messageBusClient.PublishNewMaker(makerPublishedDto);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"---> Could not send asynchronously: {ex.Message}");
+        }
         return CreatedAtRoute(nameof(GetMakerById), new { Id = makerReadDto.Id }, makerReadDto);
     }
 }

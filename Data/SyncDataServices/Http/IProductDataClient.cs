@@ -1,6 +1,6 @@
 using ProfileService.Domain.DTOs;
 
-namespace ProfileService.SyncDataServices.Http;
+namespace ProfileService.Data.SyncDataServices.Http;
 
 public interface IProductDataClient
 {
